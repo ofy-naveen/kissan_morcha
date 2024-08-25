@@ -787,6 +787,10 @@ select {
   position: static;
 }
 
+.fixed {
+  position: fixed;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -802,6 +806,10 @@ select {
 
 .flex {
   display: flex;
+}
+
+.hidden {
+  display: none;
 }
 
 .h-\[100vh\] {

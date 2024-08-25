@@ -21,25 +21,16 @@ def crop_recommend(request):
     if request.method == 'POST':
         try:
             # Extracting form data with defaults
-            nitrogen = request.POST.get('nitrogen', '').strip()
-            phosphorus = request.POST.get('phosphorous', '').strip()
-            potassium = request.POST.get('potassium', '').strip()
-            phlevel = request.POST.get('phlevel', '').strip()
-            temperature = request.POST.get('temperature', '').strip()
-            humidity = request.POST.get('humidity', '').strip()
-            rainfall = request.POST.get('rainfall', '').strip()
+            nitrogen = float(request.POST.get('nitrogen', defaults['nitrogen']))
+            phosphorus = float(request.POST.get('phosphorous', defaults['phosphorous']))
+            potassium = float(request.POST.get('potassium', defaults['potassium']))
+            phlevel = float(request.POST.get('phlevel', defaults['phlevel']))
+            temperature = float(request.POST.get('temperature', defaults['temperature']))
+            humidity = float(request.POST.get('humidity', defaults['humidity']))
+            rainfall = float(request.POST.get('rainfall', defaults['rainfall']))
 
-            # Convert to float and use default values if needed
-            nitrogen = float(nitrogen) if nitrogen else defaults['nitrogen']
-            phosphorus = float(phosphorus) if phosphorus else defaults['phosphorous']
-            potassium = float(potassium) if potassium else defaults['potassium']
-            phlevel = float(phlevel) if phlevel else defaults['phlevel']
-            temperature = float(temperature) if temperature else defaults['temperature']
-            humidity = float(humidity) if humidity else defaults['humidity']
-            rainfall = float(rainfall) if rainfall else defaults['rainfall']
-
-            # Path to the model file (relative path)
-            model_path = os.path.join(os.path.dirname(__file__), 'crop_recommend.pkl')
+            # Path to the model file
+            model_path = '/crop_recommend.pkl'
             
             # Check if the model file exists
             if not os.path.exists(model_path):

@@ -1,6 +1,4 @@
-
 document.addEventListener('DOMContentLoaded', (event) => {
-    // Define soil properties
     const soilProperties = {
         'Acrisols': [10, 5, 20, 5.5],
         'Albeluvisols': [12, 6, 22, 6.0],
@@ -34,6 +32,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
         'Vertisols': [16, 8, 27, 6.5]
     };
 
+    const apiKey = '010630c56f4a42ddadf61525241705';
+    const soilTypeCache = new Map(); // Cache to store soil types based on location
+
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -49,34 +50,66 @@ document.addEventListener('DOMContentLoaded', (event) => {
         document.getElementById('latitude').value = lat;
         document.getElementById('longitude').value = lon;
 
-        determineSoilType(lat, lon)
-            .then(soilType => {
-                const properties = soilProperties[soilType] || [0, 0, 0, 0]; // Fallback to default values
+        const locationKey = `${lat},${lon}`;
+        
+        if (soilTypeCache.has(locationKey)) {
+            // Use cached soil type
+            const soilType = soilTypeCache.get(locationKey);
+            fillFormFields(soilType, lat, lon);
+        } else {
+            determineSoilType(lat, lon)
+                .then(soilType => {
+                    soilTypeCache.set(locationKey, soilType); // Cache the soil type
+                    fillFormFields(soilType, lat, lon);
+                })
+                .catch(error => {
+                    alert('Unable to determine soil type.');
+                    console.error(error);
+                });
+        }
+    }
 
-                // Fill the form fields with properties
-                document.getElementById('potassium').value = properties[0];
-                document.getElementById('nitrogen').value = properties[1];
-                document.getElementById('phosphorous').value = properties[2];
-                document.getElementById('phlevel').value = properties[3];
-console.log("ok")
-                alert(`Location data: Latitude: ${lat}, Longitude: ${lon}
-                Potassium: ${properties[0]}, Nitrogen: ${properties[1]}, Phosphorous: ${properties[2]}, pH Level: ${properties[3]}`);
-            })
-            .catch(error => {
-                alert('Unable to determine soil type.');
-                console.error(error);
-            });
+    function fillFormFields(soilType, lat, lon) {
+        const properties = soilProperties[soilType] || [0, 0, 0, 0]; // Fallback to default values
+
+        document.getElementById('potassium').value = properties[0];
+        document.getElementById('nitrogen').value = properties[1];
+        document.getElementById('phosphorous').value = properties[2];
+        document.getElementById('phlevel').value = properties[3];
+
+        fetchWeatherData(lat, lon).then(weatherData => {
+            document.getElementById('temperature').value = weatherData.temperature;
+            document.getElementById('humidity').value = weatherData.humidity;
+            document.getElementById('rainfall').value = weatherData.rainfall;
+
+        }).catch(error => {
+            alert('Unable to retrieve weather data.');
+            console.error(error);
+        });
     }
 
     function determineSoilType(lat, lon) {
         // Replace this with actual logic to determine soil type based on coordinates.
-        // For demonstration purposes, return a promise that resolves with a random soil type.
         return new Promise((resolve, reject) => {
             // Example: return a random soil type from the list
             const soilTypes = Object.keys(soilProperties);
             const randomSoilType = soilTypes[Math.floor(Math.random() * soilTypes.length)];
             resolve(randomSoilType);
         });
+    }
+
+    function fetchWeatherData(lat, lon) {
+        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}`;
+
+        return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                return {
+                    temperature: data.current.temp_c,
+                    humidity: data.current.humidity,
+                    rainfall: data.current.precip_mm
+                };
+            });
     }
 
     function showError(error) {

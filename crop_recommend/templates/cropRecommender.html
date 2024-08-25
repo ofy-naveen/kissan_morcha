@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="flex flex-col">
+    <div class="w-[100vw] h-[100vh]" id='cropRec'>
+        <div class="flex justify-center items-center h-full"> <!-- Centering container -->
+            <div class="form_box">
+                <p class="text-lg font-bold">Enter Details</p>
+                <form id="cropForm" method="POST" class="grid-container" onsubmit='return false'>
+                    {% csrf_token %}
+                    <div class="grid-item">
+                        <label for='nitrogen'>Nitrogen</label>
+                        <input type="text" id="nitrogen" name="nitrogen" class="input_field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='phosphorous'>Phosphorous</label>
+                        <input type="text" id="phosphorous" name="phosphorous" class="input_field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='potassium'>Potassium</label>
+                        <input type="text" id="potassium" name="potassium" class="input_field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='phlevel'>pH Level</label>
+                        <input type="text" id="phlevel" name="phlevel" class="input_field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='temperature'>Temperature</label>
+                        <input type="text" id="temperature" name="temperature" class="input_field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='humidity'>Humidity</label>
+                        <input type="text" id="humidity" name="humidity" class="input_field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='rainfall'>Rainfall</label>
+                        <input type="text" id="rainfall" name="rainfall" class="input_field">
+                    </div>
+                    <div>
+                    </div>
+                    <button onclick="getLocation()" class='loc-button'>Grant Location access</button>
+                    <button class='loc-button' type="button" onclick="handleSubmit()">Submit </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handleSubmit() {
+        const form = document.getElementById('cropForm');
+        const formData = new FormData(form);
+
+        // Collecting form data into an object
+        let formValues = {};
+        formData.forEach((value, key) => {
+            formValues[key] = value;
+        });
+
+        console.log(formValues);
+        // You can now send `formValues` to your backend using an AJAX request or any other method.
+    }
+</script>
+
+{% endblock content %}

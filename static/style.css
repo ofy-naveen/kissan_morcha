@@ -304,16 +304,17 @@ nav .navbar .links li .sub-menu li{
   background-image: url('../static/assets/c3.jpg');
 }
 .card4{
-  background-image: url('../static/assets/c4.jpg');
+  background-image: url('../static/assets/c1.jpg');
 
 }
-.card4{
-  background-image: url('../static/assets/planner.png');
+.card5{
+  background-image: url('../static/assets/c2.png');
 
 }
 
 .cardText{
   color: white;
+  font: 600;
   
 }
 #cropRec {

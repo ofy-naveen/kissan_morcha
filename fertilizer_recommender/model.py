@@ -17,6 +17,12 @@ def fertilizer_recommend(request):
     
     recommended_fertilizer = None
     error_message = None
+    data = {
+        'cotton': 0, 'ginger': 1, 'gram': 2, 'grapes': 3, 'groundnut': 4,
+        'jowar': 5, 'maize': 6, 'masoor': 7, 'moong': 8, 'rice': 9,
+        'soybean': 10, 'sugarcane': 11, 'tur': 12, 'turmeric': 13,
+        'urad': 14, 'wheat': 15
+    }
 
     if request.method == 'POST':
         try:
@@ -29,6 +35,9 @@ def fertilizer_recommend(request):
             rainfall = float(request.POST.get('rainfall', defaults['rainfall']))
             crop = request.POST.get('crop', defaults['crop'])
 
+            # Convert crop name to index
+            crop_index = data.get(crop, defaults['crop'])
+            
             # Path to the model file
             model_path = '/fertilizer.pkl'
             
@@ -41,7 +50,7 @@ def fertilizer_recommend(request):
                 model = pickle.load(model_file)
 
             # Combine features into a numpy array
-            features = np.array([[nitrogen, phosphorus, potassium, phlevel, temperature, rainfall, crop]])
+            features = np.array([[nitrogen, phosphorus, potassium, phlevel, temperature, rainfall, crop_index]])
 
             # Make a prediction
             recommended_fertilizer = model.predict(features)[0]

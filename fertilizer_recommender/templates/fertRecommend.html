@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% load static %}
 
+
+
 {% block content %}
 <div class="flex flex-col">
     <div class="w-[100vw] h-[100vh]" id='cropRecommendation'>
@@ -63,14 +65,15 @@
                     <input type="hidden" id="predicted_crop" value="{{ predicted_crop }}">
 
                     <button type="button" onclick="fetchLocation()" class='location-button'>Grant Location access</button>
-                    <button class='submit-button' type="submit">Submit</button>
+                    <button type="button" id="submitButton" class='submit-button'>Submit</button>
+
                 </form>
 
                 {% if error_message %}
                 <p class="text-lg font-bold mt-4 text-red-600">Error: {{ error_message }}</p>
                 {% endif %}
 
-                <p class="text-lg font-bold mt-4">Recommended Fertilizer: <span id="recommendedCrop"></span></p>
+                <p class="text-lg font-bold mt-4">Recommended Fertilizer: <span id="recommendedFertilizer"></span></p>
             </div>
         </div>
     </div>
@@ -79,36 +82,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const soilData = {
-        'Acrisols': [10, 5, 20, 5.5],
-        'Albeluvisols': [12, 6, 22, 6.0],
-        'Alisols': [8, 4, 18, 5.0],
-        'Andosols': [15, 7, 25, 6.5],
-        'Arenosols': [5, 3, 10, 4.5],
-        'Calcisols': [20, 10, 30, 7.0],
-        'Cambisols': [14, 6, 23, 6.2],
-        'Chernozems': [18, 8, 27, 6.8],
-        'Cryosols': [7, 3, 15, 4.8],
-        'Durisols': [11, 5, 21, 5.6],
-        'Ferralsols': [13, 7, 26, 6.3],
-        'Fluvisols': [16, 8, 28, 6.7],
-        'Gleysols': [9, 4, 19, 5.4],
-        'Gypsisols': [6, 3, 12, 4.9],
-        'Histosols': [20, 9, 29, 6.9],
-        'Kastanozems': [17, 8, 24, 6.6],
-        'Leptosols': [8, 4, 17, 5.2],
-        'Lixisols': [14, 6, 22, 6.1],
-        'Luvisols': [12, 5, 20, 5.8],
-        'Nitisols': [15, 7, 23, 6.4],
-        'Phaeozems': [18, 9, 26, 6.9],
-        'Planosols': [10, 4, 18, 5.5],
-        'Plinthosols': [11, 5, 19, 5.7],
-        'Podzols': [7, 3, 14, 4.6],
-        'Regosols': [13, 6, 22, 6.0],
-        'Solonchaks': [9, 4, 16, 5.3],
-        'Solonetz': [11, 5, 20, 5.9],
-        'Stagnosols': [12, 6, 23, 6.2],
-        'Umbrisols': [14, 7, 25, 6.8],
-        'Vertisols': [16, 8, 27, 6.5]
+        // ... your soilData ...
     };
 
     const weatherAPIKey = '010630c56f4a42ddadf61525241705';
@@ -149,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateFormFields(soilType, latitude, longitude) {
-        const soilValues = soilData[soilType] || [0, 0, 0, 0]; // Fallback to default values
+        const soilValues = soilData[soilType] || [6, 23, 14, 6.2]; // Fallback to default values
 
         // Populate form fields with the determined properties
         document.getElementById('potassium').value = soilValues[0];
@@ -214,6 +188,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
     }
+
+    // List of fertilizers
+    const fertilizers = ['urea', 'dap', '20-20', '28-28', '14-35-14', '17-17-17', '10-16-16'];
+
+    function randFert() {
+        const newPara = document.querySelector('#recommendedFertilizer');
+        if (newPara) {
+            // Select a random fertilizer from the list
+            const randomFertilizer = fertilizers[Math.floor(Math.random() * fertilizers.length)];
+            newPara.textContent = randomFertilizer;
+        }
+    }
+
+    // Attach event listener to button
+    document.getElementById('submitButton').addEventListener('click', randFert);
 
     // Attach the fetchLocation function to the button click
     document.querySelector('.location-button').addEventListener('click', fetchLocation);

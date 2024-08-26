@@ -40,6 +40,9 @@
                     <!-- Hidden fields for location data -->
                     <input type="hidden" id="latitude" name="latitude">
                     <input type="hidden" id="longitude" name="longitude">
+                    
+                    <!-- Hidden field for predicted crop index -->
+                    <input type="hidden" id="predicted_crop" value="{{ predicted_crop }}">
 
                     <button type="button" onclick="getLocation()" class='loc-button'>Grant Location access</button>
                     <button class='loc-button' type="submit">Submit</button>
@@ -49,11 +52,46 @@
                 <p class="text-lg font-bold mt-4 text-red-600">Error: {{ error_message }}</p>
                 {% endif %}
 
-                {% if predicted_crop %}
-                <p class="text-lg font-bold mt-4">Recommended Crop: {{ predicted_crop }}</p>
-                {% endif %}
+                <p class="text-lg font-bold mt-4">Recommended Crop: <span id="recommendedCrop"></span></p>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cropRecommendations = {
+        0: 'apple',
+        1: 'banana',
+        2: 'blackgram',
+        3: 'chickpea',
+        4: 'coconut',
+        5: 'coffee',
+        6: 'cotton',
+        7: 'grapes',
+        8: 'jute',
+        9: 'kidneybeans',
+        10: 'lentil',
+        11: 'maize',
+        12: 'mango',
+        13: 'mothbeans',
+        14: 'mungbean',
+        15: 'muskmelon',
+        16: 'orange',
+        17: 'papaya',
+        18: 'pigeonpeas',
+        19: 'pomegranate',
+        20: 'rice',
+        21: 'watermelon'
+    };
+
+    const predictedCropIndex = document.getElementById('predicted_crop').value;
+
+    if (predictedCropIndex) {
+        const cropName = cropRecommendations[predictedCropIndex];
+        document.getElementById('recommendedCrop').textContent = cropName || 'Unknown crop';
+    }
+});
+</script>
+
 {% endblock content %}

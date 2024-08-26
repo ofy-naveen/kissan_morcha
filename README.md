@@ -9,6 +9,7 @@
           or
   python -m pip install --upgrade pip
 -pip install numpy==1.26.4
+
 -python -m pip install Pillow
 -python manage.py tailwind init (give app name as theme)
 -python manage.py tailwind install

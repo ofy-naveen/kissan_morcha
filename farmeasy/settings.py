@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_browser_reload',
     'crop_recommend',
     'fertilizer_recommender',
+    'weed_detection',
    
 ]
 

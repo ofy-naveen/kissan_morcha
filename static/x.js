@@ -32,6 +32,31 @@ document.addEventListener('DOMContentLoaded', (event) => {
         'Vertisols': [16, 8, 27, 6.5]
     };
 
+    const cropRecommendations = {
+        0: 'apple',
+        1: 'banana',
+        2: 'blackgram',
+        3: 'chickpea',
+        4: 'coconut',
+        5: 'coffee',
+        6: 'cotton',
+        7: 'grapes',
+        8: 'jute',
+        9: 'kidneybeans',
+        10: 'lentil',
+        11: 'maize',
+        12: 'mango',
+        13: 'mothbeans',
+        14: 'mungbean',
+        15: 'muskmelon',
+        16: 'orange',
+        17: 'papaya',
+        18: 'pigeonpeas',
+        19: 'pomegranate',
+        20: 'rice',
+        21: 'watermelon'
+    };
+
     const apiKey = '010630c56f4a42ddadf61525241705';
     const soilTypeCache = new Map(); // Cache to store soil types based on location
 
@@ -72,7 +97,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     function fillFormFields(soilType, lat, lon) {
         const properties = soilProperties[soilType] || [0, 0, 0, 0]; // Fallback to default values
 
-        // Populate form fields with the determined properties
         document.getElementById('potassium').value = properties[0];
         document.getElementById('nitrogen').value = properties[1];
         document.getElementById('phosphorous').value = properties[2];
@@ -82,28 +106,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
             document.getElementById('temperature').value = weatherData.temperature;
             document.getElementById('humidity').value = weatherData.humidity;
             document.getElementById('rainfall').value = weatherData.rainfall;
+
+            const cropRecommendation = recommendCrop(properties);
+            alert(`Location data: Latitude: ${lat}, Longitude: ${lon}
+            Potassium: ${properties[0]}, Nitrogen: ${properties[1]}, Phosphorous: ${properties[2]}, pH Level: ${properties[3]}
+            Temperature: ${weatherData.temperature}, Humidity: ${weatherData.humidity}, Rainfall: ${weatherData.rainfall}
+            Recommended Crop: ${cropRecommendation}`);
         }).catch(error => {
             alert('Unable to retrieve weather data.');
             console.error(error);
         });
     }
 
+    function recommendCrop(properties) {
+        // Example logic to determine crop recommendation based on properties
+        // This is a placeholder; replace with your actual logic
+        // For demonstration, we use a simple random selection
+        const cropIndex = Math.floor(Math.random() * Object.keys(cropRecommendations).length);
+        return cropRecommendations[cropIndex];
+    }
+
     function determineSoilType(lat, lon) {
         // Replace this with actual logic to determine soil type based on coordinates.
         return new Promise((resolve, reject) => {
+            // Example: return a random soil type from the list
             const soilTypes = Object.keys(soilProperties);
-
-            // Check if soil type is already stored in localStorage for the coordinates
-            const locationKey = `${lat},${lon}`;
-            const storedSoilType = localStorage.getItem(locationKey);
-            
-            if (storedSoilType) {
-                resolve(storedSoilType);
-            } else {
-                const randomSoilType = soilTypes[Math.floor(Math.random() * soilTypes.length)];
-                localStorage.setItem(locationKey, randomSoilType); // Store the soil type
-                resolve(randomSoilType);
-            }
+            const randomSoilType = soilTypes[Math.floor(Math.random() * soilTypes.length)];
+            resolve(randomSoilType);
         });
     }
 

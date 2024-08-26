@@ -26,6 +26,7 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('cropRecommender/', include('crop_recommend.urls')),
     path('fertRecommender/', include('fertilizer_recommender.urls')),
+    path('weed_detection/', include('weed_detection.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
 
 ]

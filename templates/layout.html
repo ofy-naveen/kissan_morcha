@@ -19,11 +19,14 @@
     {% block for_css %}
         
     {% endblock for_css %}
+
+    <script src="{% static 'crscript.js' %}"></script>
+
     
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <script src="{% static 'script.js' %}"></script>
-     <script src="{% static 'crscript.js' %}"></script>
+     
      {% tailwind_css %}
 
     </head>
@@ -41,15 +44,11 @@
         <ul class="links">
           <li><a href="#">HOME</a></li>
           <li>
-            <a href="#">AboutUs</a>
-            
+            <a href="#features">Features</a>
           </li>
           <li>
-            <a href="#">Log In</a>
-            
+            <a href="#aboutUs">AboutUs</a>
           </li>
-          <li><a href="#">SignUp</a></li>
-          <li><a href="#">LogOut</a></li>
         </ul>
       </div>
       

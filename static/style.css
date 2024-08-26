@@ -8,7 +8,7 @@
 }
 body{
   min-height: 100vh;
-  scroll-behavior: smooth;
+  scroll-behavior: smooth !important;
 }
 nav{
   position: fixed;
@@ -305,6 +305,10 @@ nav .navbar .links li .sub-menu li{
 }
 .card4{
   background-image: url('../static/assets/c4.jpg');
+
+}
+.card4{
+  background-image: url('../static/assets/planner.png');
 
 }
 

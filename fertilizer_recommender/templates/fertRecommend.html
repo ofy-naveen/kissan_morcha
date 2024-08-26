@@ -1,12 +1,222 @@
 {% extends "layout.html" %}
-
 {% load static %}
 
 {% block content %}
-        <div class="flex flex-col ">
-            <div class="w-[100vw] h-[100vh]" id='fertRec'>
+<div class="flex flex-col">
+    <div class="w-[100vw] h-[100vh]" id='cropRecommendation'>
+        <div class="flex justify-center items-center h-full"> <!-- Centering container -->
+            <div class="form-container">
+                <p class="text-lg font-bold">Enter Details</p>
+                <form id="soilForm" method="POST" class="grid-container">
+                    {% csrf_token %}
+                    <div class="grid-item">
+                        <label for='nitrogen'>Nitrogen</label>
+                        <input type="text" id="nitrogen" name="nitrogen" class="input-field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='phosphorus'>Phosphorus</label>
+                        <input type="text" id="phosphorus" name="phosphorus" class="input-field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='potassium'>Potassium</label>
+                        <input type="text" id="potassium" name="potassium" class="input-field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='phlevel'>pH Level</label>
+                        <input type="text" id="phlevel" name="phlevel" class="input-field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='temperature'>Temperature</label>
+                        <input type="text" id="temperature" name="temperature" class="input-field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='rainfall'>Rainfall</label>
+                        <input type="text" id="rainfall" name="rainfall" class="input-field">
+                    </div>
+                    <div class="grid-item">
+                        <label for='crop'>Crop</label>
+                        <select id="crop" name="crop" class="input-field">
+                            <option value="cotton">cotton</option>
+                            <option value="ginger">ginger</option>
+                            <option value="gram">gram</option>
+                            <option value="grapes">grapes</option>
+                            <option value="groundnut">groundnut</option>
+                            <option value="jowar">jowar</option>
+                            <option value="maize">maize</option>
+                            <option value="masoor">masoor</option>
+                            <option value="moong">moong</option>
+                            <option value="rice">rice</option>
+                            <option value="soybean">soybean</option>
+                            <option value="sugarcane">sugarcane</option>
+                            <option value="tur">tur</option>
+                            <option value="turmeric">turmeric</option>
+                            <option value="urad">urad</option>
+                            <option value="wheat">wheat</option>
+                        </select>
+                    </div>
+                   
+                    <!-- Hidden fields for location data -->
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    
+                    <!-- Hidden field for predicted crop index -->
+                    <input type="hidden" id="predicted_crop" value="{{ predicted_crop }}">
+
+                    <button type="button" onclick="fetchLocation()" class='location-button'>Grant Location access</button>
+                    <button class='submit-button' type="submit">Submit</button>
+                </form>
+
+                {% if error_message %}
+                <p class="text-lg font-bold mt-4 text-red-600">Error: {{ error_message }}</p>
+                {% endif %}
+
+                <p class="text-lg font-bold mt-4">Recommended Fertilizer: <span id="recommendedCrop"></span></p>
             </div>
-            
         </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const soilData = {
+        'Acrisols': [10, 5, 20, 5.5],
+        'Albeluvisols': [12, 6, 22, 6.0],
+        'Alisols': [8, 4, 18, 5.0],
+        'Andosols': [15, 7, 25, 6.5],
+        'Arenosols': [5, 3, 10, 4.5],
+        'Calcisols': [20, 10, 30, 7.0],
+        'Cambisols': [14, 6, 23, 6.2],
+        'Chernozems': [18, 8, 27, 6.8],
+        'Cryosols': [7, 3, 15, 4.8],
+        'Durisols': [11, 5, 21, 5.6],
+        'Ferralsols': [13, 7, 26, 6.3],
+        'Fluvisols': [16, 8, 28, 6.7],
+        'Gleysols': [9, 4, 19, 5.4],
+        'Gypsisols': [6, 3, 12, 4.9],
+        'Histosols': [20, 9, 29, 6.9],
+        'Kastanozems': [17, 8, 24, 6.6],
+        'Leptosols': [8, 4, 17, 5.2],
+        'Lixisols': [14, 6, 22, 6.1],
+        'Luvisols': [12, 5, 20, 5.8],
+        'Nitisols': [15, 7, 23, 6.4],
+        'Phaeozems': [18, 9, 26, 6.9],
+        'Planosols': [10, 4, 18, 5.5],
+        'Plinthosols': [11, 5, 19, 5.7],
+        'Podzols': [7, 3, 14, 4.6],
+        'Regosols': [13, 6, 22, 6.0],
+        'Solonchaks': [9, 4, 16, 5.3],
+        'Solonetz': [11, 5, 20, 5.9],
+        'Stagnosols': [12, 6, 23, 6.2],
+        'Umbrisols': [14, 7, 25, 6.8],
+        'Vertisols': [16, 8, 27, 6.5]
+    };
+
+    const weatherAPIKey = '010630c56f4a42ddadf61525241705';
+    const locationCache = new Map(); // Cache to store soil types based on location
+
+    function fetchLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(retrievePosition, displayError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function retrievePosition(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        document.getElementById('latitude').value = latitude;
+        document.getElementById('longitude').value = longitude;
+
+        const locationKey = `${latitude},${longitude}`;
         
+        if (locationCache.has(locationKey)) {
+            // Use cached soil type
+            const soilType = locationCache.get(locationKey);
+            populateFormFields(soilType, latitude, longitude);
+        } else {
+            identifySoilType(latitude, longitude)
+                .then(soilType => {
+                    locationCache.set(locationKey, soilType); // Cache the soil type
+                    populateFormFields(soilType, latitude, longitude);
+                })
+                .catch(error => {
+                    alert('Unable to determine soil type.');
+                    console.error(error);
+                });
+        }
+    }
+
+    function populateFormFields(soilType, latitude, longitude) {
+        const soilValues = soilData[soilType] || [0, 0, 0, 0]; // Fallback to default values
+
+        // Populate form fields with the determined properties
+        document.getElementById('potassium').value = soilValues[0];
+        document.getElementById('nitrogen').value = soilValues[1];
+        document.getElementById('phosphorus').value = soilValues[2];
+        document.getElementById('phlevel').value = soilValues[3];
+
+        retrieveWeatherData(latitude, longitude).then(weatherData => {
+            document.getElementById('temperature').value = weatherData.temperature;
+            document.getElementById('rainfall').value = weatherData.rainfall;
+        }).catch(error => {
+            alert('Unable to retrieve weather data.');
+            console.error(error);
+        });
+    }
+
+    function identifySoilType(latitude, longitude) {
+        // Replace this with actual logic to determine soil type based on coordinates.
+        return new Promise((resolve, reject) => {
+            const soilTypes = Object.keys(soilData);
+
+            // Check if soil type is already stored in localStorage for the coordinates
+            const locationKey = `${latitude},${longitude}`;
+            const storedSoilType = localStorage.getItem(locationKey);
+            
+            if (storedSoilType) {
+                resolve(storedSoilType);
+            } else {
+                const randomSoilType = soilTypes[Math.floor(Math.random() * soilTypes.length)];
+                localStorage.setItem(locationKey, randomSoilType); // Store the soil type
+                resolve(randomSoilType);
+            }
+        });
+    }
+
+    function retrieveWeatherData(latitude, longitude) {
+        const url = `https://api.weatherapi.com/v1/current.json?key=${weatherAPIKey}&q=${latitude},${longitude}`;
+
+        return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                return {
+                    temperature: data.current.temp_c,
+                    rainfall: data.current.precip_mm
+                };
+            });
+    }
+
+    function displayError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+        }
+    }
+
+    // Attach the fetchLocation function to the button click
+    document.querySelector('.location-button').addEventListener('click', fetchLocation);
+});
+</script>
 {% endblock content %}

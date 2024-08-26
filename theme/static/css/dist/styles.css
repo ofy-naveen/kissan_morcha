@@ -792,6 +792,11 @@ select {
   margin-right: auto;
 }
 
+.my-3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -806,6 +811,10 @@ select {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.ml-\[50vw\] {
+  margin-left: 50vw;
 }
 
 .block {
@@ -1002,6 +1011,14 @@ select {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-\[22px\] {
+  font-size: 22px;
+}
+
+.text-\[36px\] {
+  font-size: 36px;
 }
 
 .font-bold {

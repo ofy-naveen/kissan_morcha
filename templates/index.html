@@ -9,7 +9,7 @@
             <div class="w-full min-h-screen">
                 <img src="{% static './assets/home_img.jpg' %}" alt="" class="w-[100vw] h-[100vh]  ">
             </div>
-            <div>
+            <div id="features">
                 <h2 class='flex justify-center item-center font-medium pt-10 pb-10 text-white bg-[#0F0F0F] lg:text-6xl md:text-4xl sm:text-2xl' >
                     Features 
                 </h2>
@@ -22,12 +22,16 @@
                     <div class="card2 card" onclick="window.location.href='{% url 'fertRecommender' %}';" >
                         <h2 class="cardText"> Fertilizer Recommender</h2>
                     </div>
+                    <h2 class="text-white text-[36px] text-center mx-auto my-3">Upcoming Features...</h2>
                     <div class="card3 card" >
                         <h2 class="cardText"> Pest Detector</h2>
                         
                     </div>
                     <div class="card4  card" >
                         <h2 class="cardText ">Weed Detector</h2>
+                    </div>
+                    <div class="card5  card" >
+                        <h2 class="cardText ">Planner</h2>
                     </div>
                 </div>
             </div>
